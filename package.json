@@ -1,6 +1,18 @@
 {
   "name": "mcp-token-benchmark",
   "version": "1.0.0",
+  "description": "Token-cost benchmark for MCP tool definitions: 9 servers measured, a 25x efficiency spread, and a 95% lighter redesign of the worst offender",
   "type": "module",
+  "author": "Liz Zhang <hello.liz.zhang@gmail.com>",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/zhang-liz/mcp-token-benchmark.git"
+  },
+  "keywords": ["mcp", "model-context-protocol", "benchmark", "tokens", "llm", "ai-agents", "context-window"],
+  "engines": { "node": ">=18" },
+  "scripts": {
+    "report": "node summarize.mjs"
+  },
   "dependencies": { "gpt-tokenizer": "^3.0.0" }
 }
