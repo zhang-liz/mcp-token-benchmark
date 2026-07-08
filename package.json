@@ -1,0 +1,6 @@
+{
+  "name": "mcp-token-benchmark",
+  "version": "1.0.0",
+  "type": "module",
+  "dependencies": { "gpt-tokenizer": "^3.0.0" }
+}

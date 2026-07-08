@@ -1,0 +1,104 @@
+{
+  "label": "notion-redesigned",
+  "note": "Workflow-level redesign of the official Notion MCP server's 24 tools. Same capability surface: search, read/write pages (markdown in/out instead of block trees), query/manage databases, comments, users. The server translates markdown to Notion blocks internally — which the official server already does for its two markdown tools.",
+  "tools": [
+    {
+      "name": "search",
+      "description": "Search Notion by title or content. Returns matching pages and databases with id, title, type, and parent.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "query": { "type": "string", "description": "Search text" },
+          "type": { "type": "string", "enum": ["page", "database", "all"], "description": "Restrict results (default all)" },
+          "cursor": { "type": "string", "description": "Pagination cursor from a previous call" }
+        },
+        "required": ["query"]
+      }
+    },
+    {
+      "name": "read_page",
+      "description": "Read a page's content as markdown, including its properties. Use the page id from search results.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "page_id": { "type": "string" },
+          "include_comments": { "type": "boolean", "description": "Also return the page's comments (default false)" }
+        },
+        "required": ["page_id"]
+      }
+    },
+    {
+      "name": "write_page",
+      "description": "Create a new page or update an existing one using markdown content. To create, pass parent_id and title. To update, pass page_id and one of: content (replaces body), append (adds to end), or properties.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "page_id": { "type": "string", "description": "Page to update (omit when creating)" },
+          "parent_id": { "type": "string", "description": "Parent page or database id (required when creating)" },
+          "title": { "type": "string" },
+          "content": { "type": "string", "description": "Markdown body — replaces existing content" },
+          "append": { "type": "string", "description": "Markdown to append to the end of the page" },
+          "properties": { "type": "object", "description": "Page property values keyed by property name" },
+          "archive": { "type": "boolean", "description": "Move page to trash" }
+        }
+      }
+    },
+    {
+      "name": "query_database",
+      "description": "Query a Notion database. Returns rows as flat objects keyed by property name. Filter syntax: {property, operator, value}, e.g. {\"property\": \"Status\", \"operator\": \"equals\", \"value\": \"Done\"}. Combine with and/or arrays.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "database_id": { "type": "string" },
+          "filter": { "type": "object", "description": "Filter object (see description)" },
+          "sort": {
+            "type": "object",
+            "properties": {
+              "property": { "type": "string" },
+              "direction": { "type": "string", "enum": ["ascending", "descending"] }
+            }
+          },
+          "cursor": { "type": "string", "description": "Pagination cursor" }
+        },
+        "required": ["database_id"]
+      }
+    },
+    {
+      "name": "manage_database",
+      "description": "Create a database or update its schema. Properties map property names to types: title, rich_text, number, select, multi_select, date, people, checkbox, url, email, relation.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "database_id": { "type": "string", "description": "Database to update (omit when creating)" },
+          "parent_id": { "type": "string", "description": "Parent page id (required when creating)" },
+          "title": { "type": "string" },
+          "properties": { "type": "object", "description": "Property name → type (or {type, options} for selects)" }
+        }
+      }
+    },
+    {
+      "name": "add_comment",
+      "description": "Add a comment to a page or reply to a discussion thread.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "page_id": { "type": "string", "description": "Page to comment on" },
+          "discussion_id": { "type": "string", "description": "Thread to reply to (instead of page_id)" },
+          "text": { "type": "string", "description": "Comment text (markdown)" }
+        },
+        "required": ["text"]
+      }
+    },
+    {
+      "name": "get_users",
+      "description": "List workspace users, or get one user by id. Returns id, name, email, and type (person/bot).",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "user_id": { "type": "string", "description": "Omit to list all users" },
+          "cursor": { "type": "string", "description": "Pagination cursor" }
+        }
+      }
+    }
+  ]
+}
