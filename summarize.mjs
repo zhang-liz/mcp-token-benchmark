@@ -25,7 +25,7 @@ request before the agent does anything.
 `;
 
 for (const r of results) {
-  md += `| ${r.label} | ${r.toolCount} | ${r.totalTokens.toLocaleString()} | ${pct(r.totalTokens)} | ${Math.round(r.totalTokens / r.toolCount)} |\n`;
+  md += `| ${r.label === 'github' ? 'github (archived npm)' : r.label} | ${r.toolCount} | ${r.totalTokens.toLocaleString()} | ${pct(r.totalTokens)} | ${Math.round(r.totalTokens / r.toolCount)} |\n`;
 }
 
 const all = results.flatMap((r) => r.perTool.map((t) => ({ ...t, server: r.label })));
@@ -36,7 +36,7 @@ for (const t of all.slice(0, 15)) md += `| ${t.name} | ${t.server} | ${t.tokens.
 
 const stack = ["notion", "github", "playwright", "filesystem", "slack"];
 const stackTotal = results.filter((r) => stack.includes(r.label)).reduce((s, r) => s + r.totalTokens, 0);
-md += `\n## A realistic 5-server setup (${stack.join(", ")})\n\nTotal: **${stackTotal.toLocaleString()} tokens** = **${pct(stackTotal)}** of a 200K context window — on every single request, before the agent takes any action.\n`;
+md += `\n## A realistic 5-server setup (${stack.join(", ")})\n\nTotal: **${stackTotal.toLocaleString()} tokens** = **${pct(stackTotal)}** of a 200K context window, occupied on every request before the agent takes any action.\n`;
 
 md += `\n## Notes / caveats\n
 - o200k tokenizer is a proxy; Anthropic's tokenizer differs slightly but relative ratios hold.

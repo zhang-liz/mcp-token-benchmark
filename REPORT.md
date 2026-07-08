@@ -12,7 +12,7 @@ request before the agent does anything.
 |---|---:|---:|---:|---:|
 | notion | 24 | 17,161 | 8.6% | 715 |
 | firecrawl | 26 | 16,565 | 8.3% | 637 |
-| github | 26 | 3,546 | 1.8% | 136 |
+| github (archived npm) | 26 | 3,546 | 1.8% | 136 |
 | playwright | 23 | 3,198 | 1.6% | 139 |
 | filesystem | 14 | 1,640 | 0.8% | 117 |
 | everything | 13 | 1,084 | 0.5% | 83 |
@@ -20,6 +20,11 @@ request before the agent does anything.
 | memory | 9 | 900 | 0.4% | 100 |
 | sequential-thinking | 1 | 852 | 0.4% | 852 |
 | slack | 8 | 679 | 0.3% | 85 |
+
+Labeling note: the github row is the archived npm server
+(`@modelcontextprotocol/server-github`), benchmarked because it is still what
+npx installs. The current official Go-based server exposes several times more
+tools; rerunning against it would widen the spread.
 
 ## 15 most expensive individual tools
 
@@ -43,7 +48,8 @@ request before the agent does anything.
 
 ## A realistic 5-server setup (notion, github, playwright, filesystem, slack)
 
-Total: **26,224 tokens** = **13.1%** of a 200K context window — on every single request, before the agent takes any action.
+Total: **26,224 tokens** = **13.1%** of a 200K context window, occupied on
+every request before the agent takes any action.
 
 ## Notes / caveats
 
@@ -53,29 +59,28 @@ Total: **26,224 tokens** = **13.1%** of a 200K context window — on every singl
 
 ## Before/after: redesigning the Notion server
 
-Where Notion's 17,161 tokens actually live: **97% is inputSchema** — every tool
+Where Notion's 17,161 tokens actually live: **97% is inputSchema**. Every tool
 embeds Notion's full rich-text object model as JSON-schema `$defs`. Even
 `API-get-user`, which takes a single string parameter, costs 591 tokens.
 The descriptions are OpenAPI dumps too (tool names like `API-patch-page`,
 descriptions listing HTTP error codes), but they're only 3% of the cost.
 
-Redesign applied (same capability surface, 24 tools → 7):
+Redesign applied (same workflow coverage, 24 tools → 7):
 
-- **Workflow tools, not API mirrors** — `write_page` replaces post-page,
+- **Workflow tools, not API mirrors:** `write_page` replaces post-page,
   patch-page, patch-block-children, update-page-markdown, update-a-block,
   delete-a-block, move-page
-- **Markdown in/out instead of block trees** — the schema shrinks to
+- **Markdown in/out instead of block trees:** the schema shrinks to
   `{content: string}`; the server translates internally (the official server
   already does this for its two markdown tools)
-- **Flat schemas, no $defs** — filter/property syntax explained in one line of
+- **Flat schemas, no $defs:** filter/property syntax explained in one line of
   description instead of exhaustive nested schema
 
 | | Tools | Tokens | Avg/tool |
 |---|---:|---:|---:|
 | Official Notion MCP | 24 | 17,161 | 715 |
 | Redesigned | 7 | 773 | 110 |
-| **Reduction** | | **95.5% (22× smaller)** | |
 
 The redesigned server (773 tokens) costs about the same as Slack's official
-server (679) — well-designed MCP servers cluster around this size regardless
+server (679). Well-designed MCP servers cluster around this size regardless
 of domain complexity. Full redesigned definitions: `notion-redesigned.json`.
