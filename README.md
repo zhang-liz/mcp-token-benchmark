@@ -1,5 +1,6 @@
 # MCP Token Benchmark
 
+[![CI](https://github.com/zhang-liz/mcp-token-benchmark/actions/workflows/ci.yml/badge.svg)](https://github.com/zhang-liz/mcp-token-benchmark/actions/workflows/ci.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 [![Node.js](https://img.shields.io/badge/node-%3E%3D18-brightgreen)](package.json)
 

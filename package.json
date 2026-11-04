@@ -12,7 +12,8 @@
   "keywords": ["mcp", "model-context-protocol", "benchmark", "tokens", "llm", "ai-agents", "context-window"],
   "engines": { "node": ">=18" },
   "scripts": {
-    "report": "node summarize.mjs"
+    "report": "node summarize.mjs",
+    "test": "node --test test/*.test.mjs"
   },
   "dependencies": { "gpt-tokenizer": "^3.0.0" }
 }
